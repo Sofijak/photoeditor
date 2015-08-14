@@ -97,12 +97,77 @@ class RGBA {
     }
 }
 
-
+function initializePixelGrid(height) {
+    var pixelGrid = [];
+    for(var y = 0; y < height; y++) {
+        pixelGrid[y] = [];
+    }
+    return pixelGrid;
+}
 // class definitions here
+
+
+class ImageModel {
+    constructor(heightValue, widthValue, pixelGridValue) {
+        this.height = heightValue;
+        this.width = widthValue;
+
+        if (pixelGridValue) {
+
+            this.pixelGrid = pixelGridValue;
+
+        }
+        else {
+            this.pixelGrid = initializePixelGrid(heightValue);
+
+        }
+    }
+}
+
+function verticalMirror(imageModel) {
+
+    var mirrorImageModel = new ImageModel(imageModel.height, imageModel.width);
+
+    for (var y = 0; y < imageModel.height; y++) {
+        for (var x = 0; x < imageModel.width / 2; x++) {
+            var mirroredIndex = imageModel.width - 1 - x;
+            mirrorImageModel.pixelGrid[y][x] = imageModel.pixelGrid[y][mirroredIndex];
+            mirrorImageModel.pixelGrid[y][mirroredIndex] = imageModel.pixelGrid[y][x];
+        }
+    }
+
+    return mirrorImageModel;
+}
+
+function grayscale(imageModel) {
+
+    var grayscaleImageModel = new ImageModel(imageModel.height, imageModel.width);
+
+    for (var y = 0; y < imageModel.height; y++) {
+        for (var x = 0; x < imageModel.width; x++) {
+            var rgba = imageModel.pixelGrid[y][x];
+            var average = (rgba.red + rgba.green + rgba.blue) / 3;
+            grayscaleImageModel.pixelGrid[y][x] =
+                new RGBA(average, average, average, rgba.alpha);
+        }
+    }
+    return grayscaleImageModel;
+}
 
 $(document).ready(function() {
     var img = new Image();
-    img.src = "img/cat.jpg";
+    img.src = "img/Maldyvai.jpg";
+    var colorNames = [];
+    colorNames.push("red");
+    colorNames.push("blue");
+    colorNames.push("green")
+    console.log(colorNames[1]);
+    var pixels = initializePixelGrid(10);
+    pixels[0][0] = new RGBA(255, 0, 0, 255);
+    var imageModel = new ImageModel(300, 400);
+    var Maldyvai = ImageUtils.fromImgSrc("img/Maldyvai.jpg");
+    ImageUtils.drawImageModel(grayscale(verticalMirror(Maldyvai)));
+
 
 
 
